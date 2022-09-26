@@ -1,6 +1,7 @@
 import { allocate } from '../src/entities/allocation'
 import { Batch } from '../src/entities/batch'
 import { OrderLine } from '../src/entities/order-line'
+import { OutOfStockError } from '../src/entities/out-of-stock-error'
 
 describe('Allocation', () => {
   it('should prefer stock batches to shipments', () => {
@@ -52,5 +53,18 @@ describe('Allocation', () => {
     expect(inStockBatch.availableQuantity).toBe(90)
     expect(shipmentBatch.availableQuantity).toBe(100)
     expect(ref).toBe('in-stock-batch')
+  })
+
+  it('should return out of stock error if cannot allocate', () => {
+    const tomorrow = new Date()
+    tomorrow.setDate(new Date().getDate() + 1)
+    const clock = 'RETRO_CLOCK'
+    const spoon = 'MINIMALIST_SPOON'
+
+    const inStockBatch = new Batch('in-stock-batch', clock, 100)
+    const shipmentBatch = new Batch('shipment-batch', clock, 100, tomorrow)
+    const line = new OrderLine('oref', spoon, 10)
+
+    expect(() => allocate(line, [shipmentBatch, inStockBatch])).toThrow(OutOfStockError)
   })
 })
