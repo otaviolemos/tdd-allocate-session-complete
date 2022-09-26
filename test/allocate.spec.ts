@@ -38,7 +38,7 @@ describe('Allocation', () => {
     expect(latest.availableQuantity).toBe(100)
   })
 
-  it('should prefer stock batches to shipments', () => {
+  it('should return allocated batch reference', () => {
     const tomorrow = new Date()
     tomorrow.setDate(new Date().getDate() + 1)
     const clock = 'RETRO_CLOCK'
